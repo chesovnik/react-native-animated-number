@@ -55,7 +55,7 @@ export default class AnimatedNumber extends React.Component<Props & Omit<TextInp
     const { formatter, steps, time, value, focused } = this.props;
     /** Stop any previous animation */
     this.possiblyClearInterval();
-    if (focused) {
+    if (focused && this.textInputRef.current) {
         this.textInputRef.current.setNativeProps({ text: formatter(value) });
         this.currentValue = +(value);
         return;
