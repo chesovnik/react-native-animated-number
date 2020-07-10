@@ -6,6 +6,7 @@ interface Props {
   steps: number;
   time: number;
   value: number;
+  simple: boolean;
 }
 
 export default class AnimatedNumber extends React.Component<Props & Omit<TextInputProps, "editable"|"value">> {
@@ -13,6 +14,7 @@ export default class AnimatedNumber extends React.Component<Props & Omit<TextInp
     formatter: value => value.toString(),
     steps: 15,
     time: 17,
+    simple: false,
   };
 
   private intervalTimer?: NodeJS.Timeout;
@@ -42,7 +44,7 @@ export default class AnimatedNumber extends React.Component<Props & Omit<TextInp
   public render() {
     const { formatter, steps, time, value, ...props } = this.props;
 
-    return <TextInput {...props} ref={this.textInputRef} editable={false} value={formatter(this.currentValue)} />;
+    return <TextInput editable={false} {...props} ref={this.textInputRef} value={formatter(this.currentValue)} />;
   }
 
   private possiblyClearInterval = () => {
@@ -50,10 +52,13 @@ export default class AnimatedNumber extends React.Component<Props & Omit<TextInp
   };
 
   private handleUpdateValueImperatively = () => {
-    const { formatter, steps, time, value } = this.props;
-
+    const { formatter, steps, time, value, simple } = this.props;
     /** Stop any previous animation */
     this.possiblyClearInterval();
+    if (simple) {
+        this.textInputRef.current.setNativeProps({ text: formatter(value) });
+        return this.currentValue = +(value);
+    }
     
     /** Calculate change per step */
     const minimumStep = value - this.currentValue > 0 ? 1 : -1;
